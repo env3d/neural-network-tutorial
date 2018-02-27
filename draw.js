@@ -33,7 +33,7 @@ class DrawCanvas {
             x = parseInt( (evt.changedTouches[0].clientX - this.boundingRect.x) / 10) ;
             y = parseInt( (evt.changedTouches[0].clientY - this.boundingRect.y) / 10) ;
         }
-        console.log(x, y, evt);
+        //console.log(x, y, evt);
         return [x, y];
     }
 
