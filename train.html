@@ -69,7 +69,8 @@
                  // create data package
                  let dataItem = {
                      imageData: myCanvas.getImageData(),
-                     clssification: icons[currentIcon % icons.length]
+                     clssification: icons[currentIcon % icons.length],
+                     time: Date.now()
                  }
 
                  saveTrainingData(dataItem, 'firebase');

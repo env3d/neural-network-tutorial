@@ -23,18 +23,21 @@ numeric_classes = {
     'far fa-folder' : 3
 }
 
-with urllib.request.urlopen("https://ml-train-data.firebaseio.com/train.json") as json_data:
-    d = json.load(json_data)
+dataUrl = "https://ml-train-data.firebaseio.com/train.json";
+#dataUrl = "https://ml-train-data.firebaseio.com/train.json?orderBy=\"time\"&limitToLast=180";
 
+with urllib.request.urlopen(dataUrl) as json_data:
+    d = list(json.load(json_data).values())
 
-target_vec = np.array([numeric_classes[x['clssification']] for x in d.values()])
+print('Training samples: '+str(len(d)));
+target_vec = np.array([numeric_classes[x['clssification']] for x in d])
 
 # we can convert to binary classification if we want
 # target_vec = np.array([(1 if x == 0 else 0) for x in target_vec])
 
 target_cat = keras.utils.to_categorical(target_vec, num_classes=4)
 
-train_vec = np.array([x['imageData'] for x in d.values()])
+train_vec = np.array([x['imageData'] for x in d])
 
 model = Sequential()
 model.add(Dense(512, input_shape=(784,)))
@@ -52,7 +55,7 @@ model.compile(optimizer=opt,
 #              loss='binary_crossentropy',              
               metrics=['accuracy'])
 
-model.fit(train_vec, target_cat, epochs=3, batch_size=1)
+model.fit(train_vec, target_cat, epochs=30, batch_size=1)
 model.save('my_icons.h5')
 enc = Encoder('my_icons.h5', 'my_icons', quantize = True)
 enc.serialize()
