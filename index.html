@@ -38,20 +38,17 @@
          
         </style>
         <script defer src="https://use.fontawesome.com/releases/v5.0.6/js/all.js"></script> 
-        <script src="https://unpkg.com/keras-js"></script>
+        <!-- <script src="https://unpkg.com/keras-js"></script> -->
+	<script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@0.15.1/dist/tf.min.js"></script>
         <script src="https://d3js.org/d3.v4.min.js"></script>
         <script src="draw.js"></script>        
-        <script>
-         const model = new KerasJS.Model({
-             filepath: 'my_icons.bin',
-             gpu: false
-         });
-         model
-             .ready()
-             .then(() => {
-                 console.log('model ready');
-             })         
-        </script>
+    <script>
+     model = null;
+     tf.loadModel('my_icons.json/model.json').then( m => {
+	 model = m;
+	 console.log('model ready');
+     });
+    </script>
     </head>
     <body>        
         <canvas id="myCanvas" width="28" height="28"></canvas>
@@ -78,20 +75,22 @@
            .style('left', function(d, i) {return (i*(statsWidth/icons.length))+20 })
            .html(function(d) {return '<i class="'+d+'"></i>'});
      }
-     
+
      function predict() {
 
          imgFloatData = drawCanvas.getImageData();
-         
+         console.log(imgFloatData);
          let statsWidth = document.getElementById('stats').getBoundingClientRect().width;
          let statsHeight = document.getElementById('stats').getBoundingClientRect().height;         
-         
-         model.predict( {input: imgFloatData} )
-              .then( (result) => {
+
+	 //var input = tf.browser.fromPixels(document.getElementById("myCanvas"));
+	 input = tf.tensor(imgFloatData);
+         var res = model.predict( input.reshape([1,784]), {batchSize: 1});
+	 res.data().then( (result) => {
                   max = 0;
-                  console.log(result.output);
-                  result.output.forEach( (d, i) => {
-                      if (d > result.output[max]) {
+                  console.log(result);
+                  result.forEach( (d, i) => {
+                      if (d > result[max]) {
                           max = i;
                       }
                   });
@@ -100,7 +99,7 @@
                   // prediction.innerHTML = "<i class='"+icons[max]+"'></i>";
 
                   // visualize with d3
-                  numBins = result.output.length;
+                  numBins = result.length;
                   svgStats = d3.select('#stats');
                   
                   svgStats.style('background', '#dff0d87f')
@@ -108,7 +107,7 @@
                           .style('border', 'solid');
 
                   // update the result data
-                  rects = svgStats.selectAll('rect').data(result.output);
+                  rects = svgStats.selectAll('rect').data(result);
 
                   // add transition
                   rects.transition()
@@ -127,6 +126,7 @@
                        .attr('y', function(d) { return statsHeight - (d*statsHeight) })
                        .attr('x', function(d, i) { return (i * (statsWidth / numBins)) } )
               });
+
      }
     </script>
 </html>

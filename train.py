@@ -10,11 +10,10 @@ from keras.models import Sequential
 from keras.layers import Dense, Activation, Dropout, Flatten
 from keras.layers import Conv2D, MaxPooling2D
 
+import tensorflowjs as tfjs
+
 import os
 import sys
-
-sys.path.append(os.path.abspath("./keras-js-python-encoder"))
-from encoder import Encoder
 
 numeric_classes = {
     'fas fa-battery-empty' : 0,
@@ -23,8 +22,8 @@ numeric_classes = {
     'far fa-folder' : 3
 }
 
-dataUrl = "https://ml-train-data.firebaseio.com/train.json";
-#dataUrl = "https://ml-train-data.firebaseio.com/train.json?orderBy=\"time\"&limitToLast=180";
+#dataUrl = "https://ml-train-data.firebaseio.com/train.json";
+dataUrl = "https://ml-train-data.firebaseio.com/train.json?orderBy=\"time\"&limitToFirst=180";
 
 with urllib.request.urlopen(dataUrl) as json_data:
     d = list(json.load(json_data).values())
@@ -55,11 +54,9 @@ model.compile(optimizer=opt,
 #              loss='binary_crossentropy',              
               metrics=['accuracy'])
 
-model.fit(train_vec, target_cat, epochs=30, batch_size=1)
-model.save('my_icons.h5')
-enc = Encoder('my_icons.h5', 'my_icons', quantize = True)
-enc.serialize()
-enc.save()
+model.fit(train_vec, target_cat, epochs=3, batch_size=1)
+#model.save('my_icons.h5')
+tfjs.converters.save_keras_model(model, 'my_icons.json')
 print('finished training '+str(len(train_vec))+' datapoints')
 
 
