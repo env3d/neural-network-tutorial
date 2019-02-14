@@ -4,6 +4,7 @@
 import numpy as np
 import json
 import urllib.request
+import datetime
 
 import keras
 from keras.models import Sequential
@@ -16,16 +17,27 @@ import os
 import sys
 
 
-def get_data(data_points = None):
+def get_data(date = None, days = 1):
 
-    if data_points == None:
-        dataUrl = "https://ml-train-data.firebaseio.com/train.json";
-    else:
-        dataUrl = f"https://ml-train-data.firebaseio.com/train.json?orderBy=\"time\"&limitToFirst={data_points}";
+    if date == None:
+        # default to the original training set
+        params = f"?orderBy=\"time\"&limitToFirst=187"
+    else:        
+        time = datetime.datetime.fromordinal(date.toordinal())
+        timedelta = datetime.timedelta(days = days)        
+        startAt = int(time.timestamp() * 1000)
+        endAt = int( (time+timedelta).timestamp() * 1000)
+        params = f"?orderBy=\"time\"&startAt={startAt}&endAt={endAt}"
+    
+    dataUrl = f"https://ml-train-data.firebaseio.com/train.json{params}"
 
+    print(dataUrl)
+    
     with urllib.request.urlopen(dataUrl) as json_data:
         d = list(json.load(json_data).values())
 
+    print(f"Number of training samples: {len(d)}");
+    
     numeric_classes = {
         'fas fa-battery-empty' : 0,
         'fas fa-bolt' : 1,
@@ -45,29 +57,25 @@ def get_data(data_points = None):
     
     return train_vec, target_cat
     
-
-def train(num_data_points = None, epochs = 3, batch_size = 1):
-
-    train_vec, target_cat = get_data(data_points = num_data_points)
+def train(train_vec, target_cat, epochs = 3, batch_size = 1):
     
-    print(f"Number of training samples: {len(train_vec)}");
     print(f"Epochs = {epochs}, Batch Size = {batch_size}");
+
+    if len(train_vec) < 10:
+        print("Not enough sample to train")
+        return
     
     # create the model
     model = Sequential()
     model.add(Dense(512, input_shape=(784,)))
-    model.add(Activation('relu'))
-    #model.add(Activation('sigmoid'))
-    #model.add(Activation('softmax'))
+    model.add(Activation('relu')) # other common options are 'sigmod' and 'softmax'
     model.add(Dense(4))
-    #model.add(Activation('sigmoid'))
-    model.add(Activation('softmax'))
+    model.add(Activation('softmax')) # 'softmax' gives us percentages
 
     opt = 'rmsprop'
 
     model.compile(optimizer=opt,
-                  loss='categorical_crossentropy',
-                  # loss='binary_crossentropy',              
+                  loss='categorical_crossentropy', # 'binary_crossentrpoy' for binary classification
                   metrics=['accuracy'])
 
     # train the model 
@@ -81,5 +89,17 @@ def train(num_data_points = None, epochs = 3, batch_size = 1):
     
     print('finished training '+str(len(train_vec))+' datapoints')
 
-if __name__ == "__main__":
-    train()
+def train_original():
+    # data for my original training set
+    train(*get_data())
+
+def train_bad_data():
+    # bad dataset from March 27, 2018
+    train(*get_data(datetime.date(2018, 3, 27)))
+
+def train_today():
+    # train on today's data
+    train(*get_data(datetime.date.today()))
+    
+if __name__ == '__main__':
+    train_original()
