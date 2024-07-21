@@ -3,6 +3,8 @@ import psycopg
 import json
 import db
 import train
+import io
+import sys
 
 app = Flask(__name__, static_url_path='', static_folder='static')
 
@@ -22,23 +24,29 @@ def hello_world():
     return "<p>Hello, World!</p>"
 
 @app.route("/")
-def index():
+def index_html():
     return send_from_directory(app.static_folder, 'index.html')
 
 @app.route("/train")
-def train():
+def train_html():
     return send_from_directory(app.static_folder, 'train.html')
 
 @app.route("/my_icons.json/<f>")
 def model(f):
     return send_from_directory('my_icons.json', f)
 
+@app.route("/train_model/<minutes>")
+def train_model(minutes):    
+    output = io.StringIO()
+    sys.stdout = output
+    train.train(*train.get_data(last_x_minutes=int(minutes)))
+    sys.stdout = sys.__stdout__
+
+    return "Trained", 200
 
 @app.route("/write", methods=["POST"])
 def write_to_db():
-    data = request.get_json()
-    b = request.data
-    print(b)
+    data = request.get_json()     
     try:
         conn = get_db()
         with conn.cursor() as cursor:

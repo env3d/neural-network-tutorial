@@ -15,12 +15,17 @@ import tensorflowjs as tfjs
 import psycopg
 import db
 
-def get_data():
+def get_data(last_x_minutes=60):
     with psycopg.connect(**db.params) as conn:
         with conn.cursor() as cursor:
             print("Connected to the database.")
 
-            select_query = "SELECT data FROM training_data"
+            current_time = datetime.datetime.now()
+            tail_time = datetime.timedelta(minutes=last_x_minutes)
+            query_time = current_time - tail_time
+
+            select_query = f"""SELECT data FROM training_data WHERE timestamp 
+            > '{query_time.strftime('%Y-%m-%d %H:%M:%S')}'"""
             cursor.execute(select_query)
 
             # Fetch and print results
@@ -121,17 +126,9 @@ def train(train_vec, target_cat, epochs = 3, batch_size = 1):
     
     print('finished training '+str(len(train_vec))+' datapoints')
 
-def train_original():
-    # data for my original training set
-    train(*get_data())
-
-def train_bad_data():
-    # bad dataset from March 27, 2018
-    train(*get_data(datetime.date(2018, 3, 27)))
-
 def train_today():
     # train on today's data
-    train(*get_data(datetime.date.today()))
+    train(*get_data(last_x_minutes=1440))
     
 #if __name__ == '__main__':
 #    train_original()
