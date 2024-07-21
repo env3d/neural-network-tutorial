@@ -1,0 +1,103 @@
+<html>
+
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        body {
+            margin: auto;
+            width: 600px;
+            box-sizing: border-box;
+            display: grid;
+            grid-template-columns: 300px 300px;
+        }
+
+        .displayArea {
+            width: 280;
+            height: 280;
+            border-style: solid;
+        }
+
+        #itemToDraw {
+            font-size: 800%;
+            text-align: center;
+        }
+
+        #itemToDraw * {
+            position: relative;
+            margin-top: 50px;
+        }
+
+        @media screen and (max-width: 600px) {
+            body {
+                width: 300px;
+                grid-template-columns: 300px;
+            }
+
+            #itemToDraw {
+                height: 140px;
+                display: flex;
+            }
+
+            #itemToDraw * {
+                margin: auto;
+            }
+        }
+    </style>
+    <script defer src="https://use.fontawesome.com/releases/v5.0.6/js/all.js"></script>
+    <script defer src="draw.js"></script>
+    <script>
+
+        window.trainingData = [];
+
+        function saveTrainingData(dataItem) {
+
+            console.log(dataItem);
+            fetch('/write', {
+                headers: {
+                    'content-type': 'application/json'
+                },
+                method: 'post',
+                body: JSON.stringify(dataItem)
+            })
+
+        }
+
+        window.addEventListener('load', function () {
+
+            let myCanvas = new DrawCanvas(document.getElementById('myCanvas'));            
+            myCanvas.onPenUp(() => {
+                // create data package
+                let dataItem = {
+                    imageData: Array.from(myCanvas.getImageData()),
+                    clssification: icons[currentIcon % icons.length],
+                    time: Date.now()
+                }
+
+                saveTrainingData(dataItem);
+
+                // show next icon
+                document.getElementById('itemToDraw').innerHTML = "<i class='" + icons[++currentIcon % icons.length] + "'></i>";
+                myCanvas.clear();
+            });
+
+            let icons = ['fas fa-battery-empty', 'fas fa-bolt', 'fas fa-check', 'far fa-folder'];
+            let currentIcon = parseInt(Math.random() * 4);
+
+            document.getElementById('itemToDraw').innerHTML = "<i class='" + icons[currentIcon] + "'></i>";
+        });
+
+
+    </script>
+
+</head>
+
+<body>
+    <div class="displayArea" id="itemToDraw">
+    </div>
+    <canvas class="displayArea" id="myCanvas" width="28" height="28"></canvas>
+
+    <section id="prediction"></section>
+    <svg id="stats"></svg>
+</body>
+
+</html>
