@@ -7,7 +7,7 @@ services:
       dockerfile: .devcontainer/Dockerfile
       args:
         # [Choice] Python version: 3, 3.8, 3.7, 3.6
-        IMAGE: python:3.11
+        IMAGE: python:3.8
 
     volumes:
       - ..:/workspace:cached
