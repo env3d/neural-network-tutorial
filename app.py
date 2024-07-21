@@ -2,7 +2,7 @@ from flask import Flask, g, request, jsonify, send_from_directory
 import psycopg
 import json
 import db
-
+import train
 
 app = Flask(__name__, static_url_path='', static_folder='static')
 
