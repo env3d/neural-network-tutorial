@@ -53,46 +53,6 @@ def get_data(last_x_minutes=60):
             
             return train_vec, target_cat
         
-
-def get_data_firebase(date = None, days = 1):
-
-    if date == None:
-        # default to the original training set
-        params = "?orderBy=\"time\"&limitToFirst=187"
-    else:        
-        time = datetime.datetime.fromordinal(date.toordinal())
-        timedelta = datetime.timedelta(days = days)        
-        startAt = int(time.timestamp() * 1000)
-        endAt = int( (time+timedelta).timestamp() * 1000)
-        params = f"?orderBy=\"time\"&startAt={startAt}&endAt={endAt}"
-    
-    dataUrl = f"https://ml-train-data.firebaseio.com/train.json{params}"
-
-    print(dataUrl)
-    
-    with urllib.request.urlopen(dataUrl) as json_data:
-        d = list(json.load(json_data).values())
-
-    print(f"Number of training samples: {len(d)}")
-    
-    numeric_classes = {
-        'fas fa-battery-empty' : 0,
-        'fas fa-bolt' : 1,
-        'fas fa-check' : 2,
-        'far fa-folder' : 3
-    }
-    
-    # conver the data to numbers
-    target_vec = np.array([numeric_classes[x['clssification']] for x in d])
-    
-    # we can convert to binary classification if we want
-    # target_vec = np.array([(1 if x == 0 else 0) for x in target_vec])
-
-    # now we need to output the categories    
-    target_cat = keras.utils.to_categorical(target_vec, num_classes=4)
-    train_vec = np.array([x['imageData'] for x in d])
-    
-    return train_vec, target_cat
     
 def train(train_vec, target_cat, epochs = 3, batch_size = 1):
     
@@ -130,5 +90,3 @@ def train_today():
     # train on today's data
     train(*get_data(last_x_minutes=1440))
     
-#if __name__ == '__main__':
-#    train_original()

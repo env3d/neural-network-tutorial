@@ -35,15 +35,6 @@ def train_html():
 def model(f):
     return send_from_directory('my_icons.json', f)
 
-@app.route("/train_model/<minutes>")
-def train_model(minutes):    
-    output = io.StringIO()
-    sys.stdout = output
-    train.train(*train.get_data(last_x_minutes=int(minutes)))
-    sys.stdout = sys.__stdout__
-
-    return "Trained", 200
-
 @app.route("/write", methods=["POST"])
 def write_to_db():
     data = request.get_json()     
