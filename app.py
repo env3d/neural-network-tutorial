@@ -2,7 +2,6 @@ from flask import Flask, g, request, jsonify, send_from_directory
 import psycopg
 import json
 import db
-import train
 import io
 import sys
 

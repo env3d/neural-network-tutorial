@@ -1,0 +1,21 @@
+version: "3"
+
+services:
+  app:    
+    build: .
+    volumes:
+      - ./:/home/vscode        
+    # Runs app on the same network as the database container, allows "forwardPorts" in devcontainer.json function.
+
+    ports:
+      - "5000:5000"
+      - "8888:8888"
+
+  db:
+    image: postgres:latest
+    restart: unless-stopped
+    network_mode: service:app
+    environment:
+      POSTGRES_DB: postgres
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: LocalPasswordOnly
