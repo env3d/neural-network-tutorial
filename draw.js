@@ -11,8 +11,7 @@ class DrawCanvas {
         this.ctx = myCanvas.getContext("2d");        
         this.ctx.strokeStyle = "#000000";
 
-        this.boundingRect = myCanvas.getBoundingClientRect();
-        
+        //this.boundingRect = myCanvas.getBoundingClientRect();	
         
         myCanvas.addEventListener('mousedown', this.penDown.bind(this));
         myCanvas.addEventListener('mousemove', this.penMove.bind(this));         
@@ -25,6 +24,7 @@ class DrawCanvas {
     }
     
     getXY(evt) {
+        this.boundingRect = myCanvas.getBoundingClientRect();	
         let x=0, y=0;
         if (evt.clientX) {
             x = parseInt( (evt.clientX - this.boundingRect.x) / 10);

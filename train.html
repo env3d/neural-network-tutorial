@@ -3,12 +3,27 @@
         <meta name="viewport" content="width=device-width, initial-scale=1"> 
         <style>
 
-         body {
+         main {
              margin: auto;
-             width: 600px;
              box-sizing: border-box; 
              display: grid;
-             grid-template-columns: 300px 300px;
+
+             padding: 1rem;
+         }
+
+         h3{
+            font-size: 1.3rem;
+            margin: 2rem 0 0 0;
+         }
+
+         @media only screen and (min-width:  600px) {
+            main{
+                    grid-template-columns: 300px 300px;
+                }
+
+                h3{
+                    display: none;
+                }
          }
 
          .displayArea {
@@ -28,10 +43,10 @@
          }
 
          @media screen and (max-width: 600px) {
-             body {
+             /* body {
                  width: 300px;
                  grid-template-columns: 300px;
-             }
+             } */
 
              #itemToDraw {                 
                  height: 140px;
@@ -44,6 +59,7 @@
          }
 
         </style>
+        <link rel="stylesheet" href="./styles/style.css">
         <script defer src="https://use.fontawesome.com/releases/v5.0.6/js/all.js"></script> 
         <script defer src="draw.js"></script>
         <script>
@@ -91,11 +107,37 @@
 
     </head>
     <body>
-        <div class="displayArea" id="itemToDraw">
-        </div>
-        <canvas class="displayArea" id="myCanvas" width="28" height="28"></canvas>
+        <div class="bodyWrapper">
+            <header>
 
-        <section id="prediction"></section>
-        <svg id="stats"></svg>
+                <h1>Model and Tune your AI.</h1>
+                <nav>
+                    <ul>
+                        <li class="selected">
+                            <a href="#">Train AI</a>
+                        </li>
+                        <li >
+                            <a href="./index.html">Results</a>
+                        </li>
+                    </ul>
+                </nav>
+            </header>
+            <main>
+                <div class="displayArea" id="itemToDraw">
+                </div>
+                <div>
+                    <h3>Draw here:</h3>
+                    <canvas class="displayArea" id="myCanvas" width="28" height="28"></canvas>
+                    <section id="prediction"></section>
+                    <svg id="stats"></svg>
+                </div>
+            </main>
+            <footer>
+                <div class="program">Post Degree Diploma - Web & Mobile App Design & Development (WMDD)</div>
+                <div class="branding">
+                    <div class="brandLogo"><img src="./images/langara-logo.png" alt="Langara Logo"></div>
+                </div>
+            </footer>
+        </div>
     </body>
 </html>

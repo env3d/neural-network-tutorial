@@ -59,8 +59,9 @@ def get_data(date = None, days = 1):
     
 def train(train_vec, target_cat, epochs = 3, batch_size = 1):
     
-    print(f"Epochs = {epochs}, Batch Size = {batch_size}");
+    print(f"Epochs = {epochs}, Batch Size = {batch_size}")
 
+    print(train_vec)
     if len(train_vec) < 10:
         print("Not enough sample to train")
         return
@@ -89,6 +90,10 @@ def train(train_vec, target_cat, epochs = 3, batch_size = 1):
     
     print('finished training '+str(len(train_vec))+' datapoints')
 
+
+def train_limit():
+    train(*get_data(datetime.datetime.fromtimestamp(0)))
+    
 def train_original():
     # data for my original training set
     train(*get_data())
@@ -97,6 +102,10 @@ def train_bad_data():
     # bad dataset from March 27, 2018
     train(*get_data(datetime.date(2018, 3, 27)))
 
+def train_blank():
+    # blank data (all examples are just basic clicks)
+    train(*get_data(datetime.date(2021, 3, 17)))
+    
 def train_today():
     # train on today's data
     train(*get_data(datetime.date.today()))
